@@ -3,6 +3,7 @@ import path from 'path';
 import open from 'open';
 import webpack from 'webpack';
 import config from '../webpack.config.dev';
+import setupRouter from '../src/routes';
 
 /* eslint-disable no-console */
 
@@ -22,6 +23,9 @@ app.use(
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '../src/index.html'));
 });
+
+// setup routes
+setupRouter(app);
 
 app.listen(port, function(err) {
   if (err) {
