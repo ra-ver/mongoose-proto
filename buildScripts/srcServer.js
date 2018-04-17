@@ -4,6 +4,7 @@ import open from 'open';
 import webpack from 'webpack';
 import config from '../webpack.config.dev';
 import setupRouter from '../src/routes';
+import connectMongoose from '../src/data/setupDBConn';
 
 /* eslint-disable no-console */
 
@@ -26,6 +27,9 @@ app.get('/', function(req, res) {
 
 // setup routes
 setupRouter(app);
+
+// connect to database
+connectMongoose();
 
 app.listen(port, function(err) {
   if (err) {
