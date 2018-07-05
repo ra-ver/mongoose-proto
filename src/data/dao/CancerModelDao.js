@@ -1,6 +1,12 @@
-import { CancerModel } from '../models/CancerModel';
-import { generateItems } from '../../faker/faker';
-import { CancerModelES } from '../models/CancerModelWithES';
+import {
+  CancerModel
+} from '../models/CancerModel';
+import {
+  generateItems
+} from '../../faker/faker';
+import {
+  CancerModelES
+} from '../models/CancerModelWithES';
 /* eslint-disable */
 
 // write a test object
@@ -9,9 +15,9 @@ export const testWriteToMongo = () => {
     const testObj = new CancerModel(item);
     testObj.save(
       err =>
-        err
-          ? console.log(err)
-          : console.log(`Wrote one model to database with name: ${item.name}`)
+      err ?
+      console.log(err) :
+      console.log(`Wrote one model to database with name: ${item.name}`)
     );
   });
 };
@@ -21,9 +27,9 @@ export const testWriteToMongoAndES = () => {
     const testObj = new CancerModelES(item);
     testObj.save(
       err =>
-        err
-          ? console.log(err)
-          : console.log(`Wrote one model to database with name: ${item.name}`)
+      err ?
+      console.log(err) :
+      console.log(`Wrote one model to database with name: ${item.name}`)
     );
   });
 };
@@ -33,9 +39,9 @@ export const writeModels = targetCount => {
     const testObj = new CancerModelES(item);
     testObj.save(
       err =>
-        err
-          ? console.log(err)
-          : console.log(`Wrote model # ${idx + 1} with name: ${item.name}`)
+      err ?
+      console.log(err) :
+      console.log(`Wrote model # ${idx + 1} with name: ${item.name}`)
     );
   });
 };
@@ -46,15 +52,50 @@ export const writeModelsWithDelay = targetCount => {
       const testObj = new CancerModelES(item);
       testObj.save(err => {
         err
-          ? console.error(err)
-          : console.log(`Wrote model # ${idx + 1} with name: ${item.name}`);
+          ?
+          console.error(err) :
+          console.log(`Wrote model # ${idx + 1} with name: ${item.name}`);
         testObj.on('es-indexed', (eserr, res) => {
           eserr
-            ? console.error(`Writing to ES failed: ${eserr}`)
-            : console.log(`Document indexed into ES, name: ${item.name}`);
+            ?
+            console.error(`Writing to ES failed: ${eserr}`) :
+            console.log(`Document indexed into ES, name: ${item.name}`);
           /* Document is indexed */
         });
       });
     }, 2000 * idx);
   });
 };
+
+export const bulkIndexModels = targetCount => {
+  generateItems(targetCount).forEach((item, idx) => {
+    setTimeout(() => {
+      const testObj = new CancerModelES(item);
+      testObj.save(err => {
+        err
+          ?
+          console.error(err) :
+          console.log(`Wrote model # ${idx + 1} with name: ${item.name}`);
+        testObj.on('es-indexed', (eserr, res) => {
+          eserr
+            ?
+            console.error(`Writing to ES failed: ${eserr}`) :
+            console.log(`Document indexed into ES, name: ${item.name}`);
+          /* Document is indexed */
+        });
+      });
+    }, 2000 * idx);
+  });
+};
+
+// test filtered indexing
+
+// test one model indexing
+
+// test one model update
+
+// test es_value
+
+// test existing document update
+
+// test indexing when es is turned off - does it re-index automatically when es comes back up

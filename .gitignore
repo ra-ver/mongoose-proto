@@ -40,8 +40,6 @@ db
 #Webstorm
 .idea
 
-#VScode
-.vscode
 
 #prod build
 dist
