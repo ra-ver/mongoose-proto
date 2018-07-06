@@ -67,25 +67,65 @@ export const writeModelsWithDelay = targetCount => {
   });
 };
 
-export const bulkIndexModels = targetCount => {
-  generateItems(targetCount).forEach((item, idx) => {
-    setTimeout(() => {
-      const testObj = new CancerModelES(item);
-      testObj.save(err => {
-        err
-          ?
-          console.error(err) :
-          console.log(`Wrote model # ${idx + 1} with name: ${item.name}`);
-        testObj.on('es-indexed', (eserr, res) => {
-          eserr
-            ?
-            console.error(`Writing to ES failed: ${eserr}`) :
-            console.log(`Document indexed into ES, name: ${item.name}`);
-          /* Document is indexed */
-        });
-      });
-    }, 2000 * idx);
+const indexModelsToES = targetCount => {
+  console.log(`Going to index ${targetCount} documents`);
+  let currentDate = new Date();
+  let dateSearch = currentDate.toISOString().replace(/[\T].*[\Z]/g, "T00:00:00.000Z");
+  var inputDate = new Date(dateSearch);
+  CancerModelES.on('es-bulk-sent', function () {
+    console.log('buffer sent');
   });
+
+  CancerModelES.on('es-bulk-data', function (doc) {
+    console.log('Adding ' + doc.name);
+  });
+
+  CancerModelES.on('es-bulk-error', function (err) {
+    console.error(err);
+  });
+
+  CancerModelES
+    .esSynchronize({
+      "name": {
+        $gte: inputDate
+      }
+    })
+    .then(function () {
+      console.log('Indexing Complete.');
+    });
+};
+
+const indexOneModelToES = filter => {
+  // find this document
+  // save it to ES
+};
+
+export const bulkIndexModels = targetCount => {
+  let count = 0;
+  generateItems(targetCount).forEach((item, idx) => {
+    const testObj = new CancerModel(item);
+    testObj.save(err => {
+      err
+        ?
+        console.error(err) :
+        count++, console.log(`Wrote model # ${idx + 1} with name: ${item.name}`);
+      // es-indexed is not supposed to run as this model doesn't have the plugin attached
+      // this is kept here just to make sure to catch an unexpected behavior in the event plugin gets attached to the model at some other place in the code
+      testObj.on('es-indexed', (eserr, res) => {
+        eserr
+          ?
+          console.error(`Writing to ES failed: ${eserr}`) :
+          console.log(`Document indexed into ES, name: ${item.name}`);
+        /* Document is indexed */
+      });
+    });
+  });
+  // trigger es indexing if all docs are saved
+  setTimeout(() => {
+    count == targetCount ?
+      indexModelsToES(count) :
+      console.log("Waiting for MongoDB to populate.")
+  }, 1000);
 };
 
 // test filtered indexing

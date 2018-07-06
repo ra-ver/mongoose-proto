@@ -8,18 +8,17 @@
     "request": "launch",
     "cwd": "${workspaceFolder}",
     "name": "Launch Program",
-    "program": "${workspaceFolder}/buildScripts/executeApp.js",
-    "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/babel-node",
-    "runtimeArgs": ["--presets", "env", "--nolazy", "--inspect=5858"],
-    "stopOnEntry": false,
+    "program": "${workspaceFolder}/dist/buildScripts/executeApp.js",
+    "runtimeArgs": ["--nolazy", "--inspect=5858"],
+    "stopOnEntry": true,
     "args": [],
-    "preLaunchTask": null,
+    "preLaunchTask": "npm: build-exec",
     "env": {
       "NODE_ENV": "DEV"
     },
     "console": "integratedTerminal",
-    "sourceMaps": false,
-    "outFiles": [],
+    "sourceMaps": true,
+    "outFiles": ["${workspaceRoot}/dist/**"],
     "port": 5858
   }]
 }

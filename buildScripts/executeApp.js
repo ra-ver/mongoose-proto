@@ -1,7 +1,11 @@
 import connectMongoose from '../src/data/setupDBConn';
-import { writeModelsWithDelay } from '../src/data/dao/CancerModelDao';
+import {
+  bulkIndexModels
+} from '../src/data/dao/CancerModelDao';
 
-// connect to database
-connectMongoose();
+setTimeout(() => {
+  // connect to database
+  connectMongoose();
 
-writeModelsWithDelay(30);
+  bulkIndexModels(30);
+}, 10000);
