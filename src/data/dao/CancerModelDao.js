@@ -72,12 +72,13 @@ const indexModelsToES = targetCount => {
   let currentDate = new Date();
   let dateSearch = currentDate.toISOString().replace(/[\T].*[\Z]/g, "T00:00:00.000Z");
   var inputDate = new Date(dateSearch);
+  let count = 1;
   CancerModelES.on('es-bulk-sent', function () {
-    console.log('buffer sent');
+    //console.log('Bulk index request sent to Elasticsearch.');
   });
 
   CancerModelES.on('es-bulk-data', function (doc) {
-    console.log('Adding ' + doc.name);
+    console.log(`Indexing document # ${count++} with name: ${doc.name}`);
   });
 
   CancerModelES.on('es-bulk-error', function (err) {
@@ -90,14 +91,20 @@ const indexModelsToES = targetCount => {
         $gte: inputDate
       }
     })
-    .then(function () {
+    .then((result) => {
+      console.log(result);
       console.log('Indexing Complete.');
     });
 };
 
-const indexOneModelToES = filter => {
-  // find this document
-  // save it to ES
+export const indexOneModelToES = filter => {
+  CancerModelES.findOne(filter, (err, doc) => {
+    doc.esIndex((err, res) => {
+      err ?
+        console.log(`Indexing failed with error: ${err}`) :
+        console.log(`Indexing successful with status: ${res.result}`);
+    });
+  });
 };
 
 export const bulkIndexModels = targetCount => {

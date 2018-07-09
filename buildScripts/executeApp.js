@@ -1,6 +1,7 @@
 import connectMongoose from '../src/data/setupDBConn';
 import {
-  bulkIndexModels
+  bulkIndexModels,
+  indexOneModelToES
 } from '../src/data/dao/CancerModelDao';
 
 setTimeout(() => {
@@ -8,4 +9,11 @@ setTimeout(() => {
   connectMongoose();
 
   bulkIndexModels(30);
-}, 10000);
+
+  setTimeout(() => {
+    indexOneModelToES({
+      name: "APTB-ohni"
+    });
+  }, 5000);
+
+}, 1000);
